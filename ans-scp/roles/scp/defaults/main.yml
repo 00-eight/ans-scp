@@ -1,0 +1,80 @@
+---
+scp_config:
+  PowerEdge R630:
+    bios_attrs:
+      AcPwrRcvry: "Last"
+      AesNi: "Enabled"
+      BootMode: "Uefi"
+      BootSeqRetry: "Enabled"
+      ConTermType: "Vt100Vt220"
+      ExtSerialConnector: "Serial1"
+      FailSafeBaud: "115200"
+      IntegratedNetwork1: "Enabled"
+      IntegratedRaid: "Enabled"
+      ProcVirtualization: "Enabled"
+      ProcX2Apic: "Enabled"
+      RedirAfterBoot: "Enabled"
+      SecureBoot: "Disabled"
+      SerialComm: "OnConRedirCom1"
+      SerialPortAddress: "Serial1Com1Serial2Com2"
+      SriovGlobalEnable: "Disabled"
+      SysProfile: "PerfPerWattOptimizedOs"
+      LogicalProc: "Enabled"
+      PxeDev1EnDis: "Enabled"
+      PxeDev1Interface: "NIC.Slot.2-2-1" #Ensure this is valid
+      PxeDev1Protocol: "IPv4"
+      PxeDev1VlanEnDis: "Disabled"
+      PxeDev1VlanId: 1
+      PxeDev1VlanPriority: 0
+  PowerEdge R730:
+    bios_attrs:
+      AcPwrRcvry: "Last"
+      AesNi: "Enabled"
+      BootMode: "Uefi"
+      BootSeqRetry: "Enabled"
+      ConTermType: "Vt100Vt220"
+      ExtSerialConnector: "Serial1"
+      FailSafeBaud: "115200"
+      IntegratedNetwork1: "Enabled"
+      IntegratedRaid: "Enabled"
+      ProcVirtualization: "Enabled"
+      ProcX2Apic: "Enabled"
+      RedirAfterBoot: "Enabled"
+      SecureBoot: "Disabled"
+      SerialComm: "OnConRedirCom1"
+      SerialPortAddress: "Serial1Com1Serial2Com2"
+      SriovGlobalEnable: "Disabled"
+      SysProfile: "PerfPerWattOptimizedOs"
+      LogicalProc: "Enabled"
+      PxeDev1EnDis: "Enabled"
+      PxeDev1Interface: "NIC.Slot.4-1-1" #Ensure this is valid
+      PxeDev1Protocol: "IPv4"
+      PxeDev1VlanEnDis: "Disabled"
+      PxeDev1VlanId: 1
+      PxeDev1VlanPriority: 0
+  PowerEdge R730xd:
+    bios_attrs:
+      AcPwrRcvry: "Last"
+      AesNi: "Enabled"
+      BootMode: "Uefi"
+      BootSeqRetry: "Enabled"
+      ConTermType: "Vt100Vt220"
+      ExtSerialConnector: "Serial1"
+      FailSafeBaud: "115200"
+      IntegratedNetwork1: "Enabled"
+      IntegratedRaid: "Enabled"
+      ProcVirtualization: "Enabled"
+      ProcX2Apic: "Enabled"
+      RedirAfterBoot: "Enabled"
+      SecureBoot: "Disabled"
+      SerialComm: "OnConRedirCom1"
+      SerialPortAddress: "Serial1Com1Serial2Com2"
+      SriovGlobalEnable: "Disabled"
+      SysProfile: "PerfPerWattOptimizedOs"
+      LogicalProc: "Enabled"
+      PxeDev1EnDis: "Enabled"
+      PxeDev1Interface: "NIC.Integrated.1-1-1" #Ensure this is valid
+      PxeDev1Protocol: "IPv4"
+      PxeDev1VlanEnDis: "Disabled"
+      PxeDev1VlanId: 1
+      PxeDev1VlanPriority: 0

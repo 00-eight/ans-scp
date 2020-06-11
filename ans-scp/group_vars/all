@@ -1,0 +1,7 @@
+---
+# file: group_vars/all
+default_uri_timeout: 60
+default_uri_retries: 5
+default_uri_delay: 5
+scp_task_uri_retries: 30
+scp_task_uri_delay: 30

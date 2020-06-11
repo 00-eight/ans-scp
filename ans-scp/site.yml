@@ -1,0 +1,19 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    bmc_address: "{{ inventory_hostname }}"
+    #bmc_user: "{{ bmc_user }}"
+    #bmc_password: "{{bmc_password }}"
+  pre_tasks:
+    - name: Check Ansible Compatibility
+      fail:
+        msg: "You must run ansible version >= 2.8.6"
+      when: ansible_version.full is version('2.8.5', '<=')
+      tags: always
+
+  roles:
+    - role: scp
+
+  environment:
+    TERM: screen

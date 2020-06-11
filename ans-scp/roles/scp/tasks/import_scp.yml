@@ -1,0 +1,190 @@
+---
+- block:
+
+  - name: Identify System Model
+    uri:
+      url: "https://{{ bmc_address }}/{{ redfish_uri }}"
+      method: GET
+      user: "{{ bmc_user }}"
+      password: "{{ bmc_pass }}"
+      status_code:
+        - 200
+      validate_certs: no
+      force_basic_auth: yes
+      timeout: "{{ default_uri_timeout }}"
+      headers:
+        accept: 'application/json'
+        OData-Version: '4.0'
+    register: identify_response
+    until: identify_response is succeeded
+    retries: "{{ default_uri_retries }}"
+    delay: "{{ default_uri_retries }}"
+    delegate_to: 127.0.0.1
+    vars:
+      redfish_uri: "redfish/v1/Systems/System.Embedded.1"
+
+
+  - name: DBGPRINT Identify System model
+    debug:
+      var: identify_response.json.Model
+    tags:
+      - debug
+
+
+  - name: setup ansilbe ansible_facts
+    set_fact:
+      ansible_facts: "{{ ansible_facts | combine({'ansible_product_name' : identify_response.json.Model}) }}"
+    tags:
+      - debug
+
+
+  - name: DBGPRINT Ansible facts
+    debug:
+      var: ansible_facts
+    tags:
+      - debug
+
+
+  #- name: DBGPRINT scp facts
+  #  debug:
+  #    var: scp_config
+  #  tags:
+  #    - debug
+
+
+  #
+  # Example to Override default value
+  #
+  #- name: Example Modify Defaults
+  #  set_fact:
+  #    scp_config: "{{ scp_config | combine({identify_response.json.Model: {'bios_attrs': {'SysProfile': 'PerfPerWattOptimizedOs'}}}, recursive=True) }}"
+  #
+  #
+  #- name: DBGPRINT Modified scp_config facts
+  #  debug:
+  #    var: scp_config
+
+
+  - name: Import SCP XML Stage 1
+    uri:
+      url: "https://{{bmc_address}}/{{redfish_uri}}"
+      method: POST
+      user: "{{ bmc_user }}"
+      password: "{{ bmc_pass }}"
+      status_code:
+        - 200
+        - 202
+      validate_certs: no
+      force_basic_auth: yes
+      timeout: "{{ default_uri_timeout }}"
+      body_format: json
+      body:
+        ShareParameters:
+          Target: "ALL"
+        ShutdownType: "Forced"  #Graceful
+        ImportBuffer: "{{ lookup('template','scp_base.j2')}}"
+      headers:
+        accept: 'application/json'
+        OData-Version: '4.0'
+    register: import_s1_response
+    until: import_s1_response is succeeded
+    retries: "{{ scp_task_uri_retries }}"
+    delay: "{{ scp_task_uri_delay }}"
+    delegate_to: 127.0.0.1
+    changed_when: import_s1_response.status == 200 or import_s1_response.status == 202
+    vars:
+      redfish_uri: "redfish/v1/Managers/iDRAC.Embedded.1/Actions/Oem/EID_674_Manager.ImportSystemConfiguration"
+
+
+  - name: DBGPRINT JID from import_s1_response
+    debug:
+      var: import_s1_response.location
+
+
+  - name: Poll until Import SCP XML Stage 1 Completes
+    uri:
+      url: "{{ import_s1_response.location }}"
+      user: "{{ bmc_user }}"
+      password: "{{ bmc_pass}}"
+      status_code:
+        - 200
+        - 202
+      validate_certs: no
+      force_basic_auth: yes
+      headers:
+        accept: 'application/json'
+        OData-Version: '4.0'
+      timeout: "{{ default_uri_timeout }}"
+    delegate_to: 127.0.0.1
+    register: s1_job_status
+    until:
+      - s1_job_status.json is defined
+      - s1_job_status.json.Oem.Dell.JobState == "Completed"
+    retries: "{{ scp_task_uri_retries }}"
+    delay: "{{ scp_task_uri_delay }}"
+
+
+  - name: Import SCP XML Stage 2
+    uri:
+      url: "https://{{bmc_address}}/{{redfish_uri}}"
+      method: POST
+      user: "{{ bmc_user }}"
+      password: "{{ bmc_pass }}"
+      status_code:
+        - 200
+        - 202
+      validate_certs: no
+      force_basic_auth: yes
+      timeout: "{{ default_uri_timeout }}"
+      body_format: json
+      body:
+        ShareParameters:
+          Target: "ALL"
+        ShutdownType: "Forced"  #Graceful
+        ImportBuffer: "{{ lookup('template','scp_base.j2')}}"
+      headers:
+        accept: 'application/json'
+        OData-Version: '4.0'
+    register: import_s2_response
+    until: import_s2_response is succeeded
+    retries: "{{ scp_task_uri_retries }}"
+    delay: "{{ scp_task_uri_delay }}"
+    delegate_to: 127.0.0.1
+    changed_when: import_s2_response.status == 200 or import_s2_response.status == 202
+    vars:
+      redfish_uri: "redfish/v1/Managers/iDRAC.Embedded.1/Actions/Oem/EID_674_Manager.ImportSystemConfiguration"
+
+
+  - name: DBGPRINT JID from import_s2_response
+    debug:
+      var: import_s2_response.location
+
+
+  - name: Poll until Import SCP XML Stage 2 Completes
+    uri:
+      url: "{{ import_s2_response.location }}"
+      user: "{{ bmc_user }}"
+      password: "{{ bmc_pass}}"
+      status_code:
+        - 200
+        - 202
+      validate_certs: no
+      force_basic_auth: yes
+      headers:
+        accept: 'application/json'
+        OData-Version: '4.0'
+      timeout: "{{ default_uri_timeout }}"
+    delegate_to: 127.0.0.1
+    vars:
+      messageid_success_list:
+        - SYS053 # Successfully imported and applied Server Configuration Profile.
+        - SYS054 # No configuration changes requiring a system restart need to be applied.
+        - SYS055 # Import of Server Configuration Profile operation completed with errors.
+        - SYS069 # No changes were applied since the current component configuration matched the requested configuration.
+    register: s2_job_status
+    until:
+      - s2_job_status.json is defined
+      - s2_job_status.json.Oem.Dell.JobState == "Completed"
+      - s2_job_status.json.Oem.Dell.MessageId in messageid_success_list
+    retries: "{{ scp_task_uri_retries }}"
+    delay: "{{ scp_task_uri_delay }}"

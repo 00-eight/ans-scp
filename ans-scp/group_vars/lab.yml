@@ -1,0 +1,3 @@
+# file: group_vars/eercokc
+bmc_user: root
+bmc_pass: calvin

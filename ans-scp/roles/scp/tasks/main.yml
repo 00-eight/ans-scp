@@ -1,0 +1,4 @@
+---
+  - block:
+    - name: Include SCP tasks
+      include_tasks: import_scp.yml

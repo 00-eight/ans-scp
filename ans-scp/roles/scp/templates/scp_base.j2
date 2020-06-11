@@ -1,0 +1,7 @@
+<SystemConfiguration>
+<Component FQDD="BIOS.Setup.1-1">
+{% for key,value in scp_config[ansible_product_name]['bios_attrs'].items() %}
+    <Attribute Name="{{ key }}">{{ value }}</Attribute>
+{% endfor %}
+</Component>
+</SystemConfiguration>

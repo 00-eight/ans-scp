@@ -41,7 +41,7 @@ ansible-playbook -i <inventory.ini> site.yml
 
 ## Implementation Details
 1. Identify System Model from redfish/v1/Systems/System.Embedded.1
-2. Generate SCP using Jinja Template
+2. Generate SCP using Jinja Template 
   - Index System Model into /roles/scp/defaults/main.yml
 3. Import System Config Profile redfish/v1/Managers/iDRAC.Embedded.1/Actions/Oem/EID_674_Manager.ImportSystemConfiguration
 4. Monitor Job /redfish/v1/Managers/iDRAC.Embedded.1/Jobs/<JID>
